@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react"
 
 import Login from "./pages/Login"
+import Lobby from "./pages/Lobby"
 import api from "./services/api"
 
 
 function App() {
-  const [showLogin, setShowLogin] = useState(false)
   const [user, setUser] = useState(null)
+  const [page, setPage] = useState("home")
   const [loading, setLoading] = useState(true)
 
 
+  // Check existing JWT session
   useEffect(() => {
     const token = localStorage.getItem("access_token")
 
@@ -34,41 +36,73 @@ function App() {
   }, [])
 
 
+  const handleLogin = (loggedInUser) => {
+    setUser(loggedInUser)
+    setPage("lobby")
+  }
+
+
   const handleLogout = () => {
     localStorage.removeItem("access_token")
     localStorage.removeItem("refresh_token")
 
     setUser(null)
+    setPage("home")
+  }
+
+
+  const startInvestigation = () => {
+    if (user) {
+      setPage("lobby")
+    } else {
+      setPage("login")
+    }
   }
 
 
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-        <div className="text-center">
-          <div className="text-5xl">🕵️</div>
 
-          <p className="mt-4 text-slate-400">
+        <div className="text-center">
+
+          <div className="text-6xl">
+            🕵️
+          </div>
+
+          <p className="mt-4 text-slate-500">
             Checking your identity...
           </p>
+
         </div>
+
       </main>
     )
   }
 
 
-  if (showLogin && !user) {
+  // Login
+  if (page === "login" && !user) {
     return (
-      <Login
-        onLogin={(loggedInUser) => {
-          setUser(loggedInUser)
-          setShowLogin(false)
+      <Login onLogin={handleLogin} />
+    )
+  }
+
+
+  // Lobby
+  if (page === "lobby" && user) {
+    return (
+      <Lobby
+        onSelectGame={(game) => {
+          console.log("Selected game:", game)
         }}
+        onLogout={handleLogout}
       />
     )
   }
 
 
+  // Home
   return (
     <main className="min-h-screen bg-slate-950 text-white">
 
@@ -111,7 +145,7 @@ function App() {
             </>
           ) : (
             <button
-              onClick={() => setShowLogin(true)}
+              onClick={() => setPage("login")}
               className="rounded-full border border-slate-700 px-5 py-2 text-sm text-slate-300 transition hover:bg-slate-800 hover:text-white"
             >
               🔐 Login
@@ -132,7 +166,6 @@ function App() {
             🕵️
           </div>
 
-
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900 px-4 py-2 text-sm text-slate-400">
 
             <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
@@ -144,7 +177,7 @@ function App() {
           </div>
 
 
-          <h2 className="text-5xl font-black sm:text-6xl">
+          <h2 className="text-5xl font-black sm:text-6xl md:text-7xl">
 
             CAN YOU FIND
 
@@ -166,7 +199,8 @@ function App() {
 
 
           <button
-            className="mt-10 rounded-2xl bg-white px-8 py-4 text-lg font-bold text-slate-950 transition hover:-translate-y-1 hover:bg-slate-200"
+            onClick={startInvestigation}
+            className="mt-10 rounded-2xl bg-white px-8 py-4 text-lg font-bold text-slate-950 transition hover:-translate-y-1 hover:bg-slate-200 active:scale-95"
           >
             🔍 START INVESTIGATION
           </button>
