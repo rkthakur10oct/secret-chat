@@ -1,16 +1,84 @@
-# React + Vite
+# Secret Chat — Complete Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Production-ready frontend structure for the current Secret Chat Django REST API.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Login
+- Registration
+- JWT access/refresh handling
+- Protected application flow
+- Game/case lobby
+- Game detail / investigation room
+- Conversation evidence
+- Suspect selection
+- One-guess submission
+- Correct/wrong result screen
+- Score display
+- Leaderboard
+- Loading/error/retry states
+- Responsive mobile/desktop UI
+- Environment-based API URL for deployment
 
-## React Compiler
+## Backend API expected
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```text
+POST /api/auth/register/
+POST /api/auth/login/
+POST /api/auth/token/refresh/
+GET  /api/games/
+GET  /api/games/<id>/
+POST /api/games/<id>/guess/
+GET  /api/games/leaderboard/
+```
 
-## Expanding the Oxlint configuration
+## Local setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```powershell
+npm install
+npm run dev
+```
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+Backend:
+
+```text
+http://127.0.0.1:8000
+```
+
+## Deployment
+
+Create `.env` from `.env.example`:
+
+```env
+VITE_API_BASE_URL=https://YOUR-BACKEND-DOMAIN/api
+```
+
+Then:
+
+```powershell
+npm install
+npm run build
+```
+
+The generated `dist/` folder can be deployed to a static frontend host.
+
+## Important
+
+Before deployment, configure the Django backend for:
+
+- production `DEBUG=False`
+- allowed hosts
+- CORS for the deployed frontend domain
+- HTTPS
+- production database
+- secure secret key
+- JWT settings
+- static/media handling
+
+Also verify the backend CORS configuration allows the exact deployed frontend origin.
