@@ -9,8 +9,8 @@ from .serializers import (
     GameDetailSerializer,
     GameListSerializer,
     GuessSerializer,
+    LeaderboardSerializer,
 )
-
 
 class GameListView(generics.ListAPIView):
     """
@@ -105,3 +105,20 @@ class GameGuessView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+        
+class LeaderboardView(generics.ListAPIView):
+    """
+    Return the highest scoring players.
+    """
+
+    serializer_class = LeaderboardSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Score.objects.select_related(
+            "user",
+            "game",
+        ).order_by(
+            "-points",
+            "created_at",
+        )[:20]        

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Game, Message, Suspect
+from .models import Game, Message, Score, Suspect
 
 
 class GameListSerializer(serializers.ModelSerializer):
@@ -93,3 +93,23 @@ class GuessSerializer(serializers.Serializer):
     """
 
     suspect_id = serializers.IntegerField(min_value=1)
+    
+class LeaderboardSerializer(serializers.ModelSerializer):
+    """
+    Public leaderboard representation.
+
+    Only the player's name and score are exposed.
+    """
+
+    username = serializers.CharField(
+        source="user.username",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Score
+        fields = [
+            "username",
+            "points",
+        ]
+        read_only_fields = fields
